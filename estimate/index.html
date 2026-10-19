@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>料金・見積シミュレーター（サンプル）｜ブラウザで動く業務ツール制作</title>
+  <meta name="description" content="間取り・作業箇所・条件を選ぶだけで概算料金が即時に表示される見積シミュレーターのサンプル。結果からそのまま問い合わせ文を作成できます。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="料金・見積シミュレーター（サンプル）">
+  <meta property="og:description" content="条件を選ぶと概算が出て、そのまま問い合わせ文が作れる見積シミュレーターのサンプルです。">
+  <meta property="og:image" content="/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="料金・見積シミュレーター（サンプル）">
+  <meta name="twitter:description" content="条件を選ぶと概算が出て、そのまま問い合わせ文が作れる見積シミュレーターのサンプルです。">
+  <meta name="twitter:image" content="/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    /* ---------- 見積シミュレーター固有 ---------- */
+    .page-note {
+      background: var(--accent-tint);
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-sub);
+      padding: 8px 0;
+    }
+    .page-head {
+      padding: 28px 0 8px;
+    }
+    .page-head h1 {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .page-head p {
+      color: var(--text-sub);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .sim {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 24px;
+      align-items: start;
+      padding: 16px 0 96px;
+    }
+    @media (max-width: 860px) {
+      .sim {
+        grid-template-columns: minmax(0, 1fr);
+        padding-bottom: 88px;
+      }
+    }
+
+    /* フォーム */
+    .form-group {
+      margin-bottom: 8px;
+    }
+    .form-group + .form-group {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .form-group legend {
+      float: left;
+      width: 100%;
+    }
+    .form-group::after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+    .choices {
+      clear: both;
+    }
+    .form-group legend,
+    .form-group .label {
+      font-weight: 700;
+      font-size: 15px;
+      padding: 0;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .form-group legend small {
+      font-weight: 400;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    fieldset {
+      border: none;
+      margin: 0;
+      padding: 0;
+      min-width: 0;
+    }
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 8px;
+    }
+    .choice {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 48px;
+      padding: 8px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 14px;
+      user-select: none;
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+    .choice:hover {
+      border-color: var(--accent);
+    }
+    .choice input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+      pointer-events: none;
+    }
+    .choice .txt {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.35;
+      min-width: 0;
+    }
+    .choice .txt .name {
+      font-weight: 500;
+    }
+    .choice .txt .amt {
+      font-size: 12px;
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+    .choice:has(input:checked) {
+      border-color: var(--accent);
+      background: var(--accent-tint);
+      box-shadow: inset 0 0 0 1px var(--accent);
+    }
+    .choice:has(input:focus-visible) {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .choice .mark {
+      width: 18px;
+      height: 18px;
+      flex: none;
+      border-radius: 50%;
+      border: 2px solid var(--border-strong);
+      display: grid;
+      place-items: center;
+      background: var(--surface);
+    }
+    .choice.is-check .mark {
+      border-radius: 5px;
+    }
+    .choice .mark svg {
+      width: 12px;
+      height: 12px;
+      color: #fff;
+      opacity: 0;
+    }
+    .choice:has(input:checked) .mark {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .choice:has(input:checked) .mark svg {
+      opacity: 1;
+    }
+    .choice .qty {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+      flex: none;
+    }
+    .choice:has(input:checked) .qty {
+      display: inline-flex;
+    }
+    .qty select {
+      font-family: inherit;
+      font-size: 14px;
+      min-height: 32px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    /* 結果カード */
+    .result {
+      position: sticky;
+      top: 72px;
+    }
+    .result h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+    }
+    .total {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .total .label {
+      font-size: 14px;
+      color: var(--text-sub);
+    }
+    .total .value {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+      color: var(--accent);
+    }
+    .total .yen {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .breakdown {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .lines {
+      list-style: none;
+      margin: 16px 0 0;
+      padding: 12px 0 0;
+      border-top: 1px dashed var(--border);
+      font-size: 14px;
+      display: grid;
+      gap: 6px;
+    }
+    .lines li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .lines li .n {
+      color: var(--text);
+      min-width: 0;
+    }
+    .lines li .v {
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .lines li.minus .v {
+      color: var(--ok-text);
+    }
+    .lines li.empty {
+      color: var(--text-muted);
+      justify-content: flex-start;
+    }
+    .result .actions {
+      margin-top: 16px;
+      display: grid;
+      gap: 8px;
+    }
+    .result .btn { width: 100%; }
+    .result .note {
+      margin-top: 12px;
+      font-size: 12px;
+    }
+
+    /* 問い合わせ文 */
+    .inquiry {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .inquiry[hidden] { display: none; }
+    .inquiry h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .inquiry textarea {
+      width: 100%;
+      min-height: 220px;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-sub);
+      color: var(--text);
+      resize: vertical;
+    }
+    .inquiry .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .copy-done {
+      font-size: 12px;
+      color: var(--ok-text);
+      margin-top: 6px;
+      min-height: 1.2em;
+    }
+
+    /* スマホ用：画面下に固定の合計バー */
+    .sticky-bar {
+      display: none;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 30;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    }
+    .sticky-bar .inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .sticky-bar .t {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+    .sticky-bar .t small {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+    .sticky-bar .t strong {
+      font-size: 22px;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+    @media (max-width: 860px) {
+      .sticky-bar { display: block; }
+      .result { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="../">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7"></path>
+        </svg>
+        トップページへ戻る
+      </a>
+      <nav class="header-nav" aria-label="サンプル情報">
+        <span class="badge badge-live">公開中のサンプル</span>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-note">
+    <div class="container">サンプル：架空の「<span data-business-name>○○ハウスクリーニング</span>」の料金表です。数値は実在の業者とは関係ありません。</div>
+  </div>
+
+  <main class="container">
+    <div class="page-head">
+      <h1>料金・見積シミュレーター</h1>
+      <p>条件を選ぶと、その場で概算料金が表示されます。送信ボタンはありません。</p>
+    </div>
+
+    <div class="sim">
+
+      <!-- 左：入力フォーム -->
+      <form class="card" id="form" novalidate>
+        <fieldset class="form-group">
+          <legend>間取り <small>1 つ選択</small></legend>
+          <div class="choices" id="layouts"></div>
+        </fieldset>
+
+        <fieldset class="form-group">
+          <legend>作業箇所 <small>複数選択できます</small></legend>
+          <div class="choices" id="items"></div>
+        </fieldset>
+
+        <fieldset class="form-group">
+          <legend>条件 <small>該当するものを選択</small></legend>
+          <div class="choices" id="modifiers"></div>
+        </fieldset>
+
+        <fieldset class="form-group">
+          <legend>エリア <small>1 つ選択</small></legend>
+          <div class="choices" id="areas"></div>
+        </fieldset>
+      </form>
+
+      <!-- 右：概算結果 -->
+      <aside class="card result" id="result" aria-live="polite">
+        <h2>概算結果</h2>
+        <div class="total">
+          <span class="label">税込合計</span>
+          <span class="yen">¥</span><span class="value" id="total">0</span>
+        </div>
+        <div class="breakdown">
+          <span>税抜 ¥<span id="subtotal">0</span></span>
+          <span>消費税 ¥<span id="tax">0</span></span>
+        </div>
+
+        <ul class="lines" id="lines"></ul>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="button" id="btn-inquiry">この内容で問い合わせる</button>
+          <button class="btn btn-secondary btn-sm" type="button" id="btn-share">この条件の URL をコピー</button>
+        </div>
+
+        <div class="inquiry" id="inquiry" hidden>
+          <h3>問い合わせ文（編集できます）</h3>
+          <textarea id="inquiry-text" spellcheck="false"></textarea>
+          <div class="row">
+            <button class="btn btn-secondary btn-sm" type="button" id="btn-copy">コピー</button>
+            <a class="btn btn-primary btn-sm" id="btn-mail" href="#">メールで送る</a>
+          </div>
+          <div class="copy-done" id="copy-done"></div>
+        </div>
+
+        <p class="note">※ 概算です。正式なお見積りは現地確認のうえご提示します。</p>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- スマホ用の固定合計バー -->
+  <div class="sticky-bar" id="sticky-bar">
+    <div class="inner">
+      <div class="t">
+        <small>税込合計（概算）</small>
+        <strong>¥<span id="sticky-total">0</span></strong>
+      </div>
+      <a class="btn btn-primary btn-sm" href="#result">明細を見る</a>
+    </div>
+  </div>
+
+  <script>
+  // ============================================================
+  // 設定：料金表はここだけを書き換えれば別業種に流用できます。
+  // ============================================================
+  const CONFIG = {
+    businessName: "○○ハウスクリーニング",
+    contactEmail: "{{CONTACT_EMAIL}}",   // 「メールで送る」の宛先
+    taxRate: 0.10,
+    layouts: [            // 間取り（単一選択）
+      { id: "1r",   label: "1R / 1K",  price: 18000 },
+      { id: "1ldk", label: "1LDK",     price: 28000 },
+      { id: "2ldk", label: "2LDK",     price: 38000 },
+      { id: "3ldk", label: "3LDK",     price: 48000 },
+      { id: "4ldk", label: "4LDK 以上", price: 60000 },
+    ],
+    items: [              // 作業箇所（複数選択、数量あり）
+      { id: "aircon",  label: "エアコン",       price: 12000, unit: "台", maxQty: 5 },
+      { id: "kitchen", label: "キッチン",       price: 15000 },
+      { id: "bath",    label: "浴室",           price: 14000 },
+      { id: "toilet",  label: "トイレ",         price: 8000 },
+      { id: "window",  label: "窓・サッシ",      price: 10000 },
+      { id: "hood",    label: "レンジフード",    price: 12000 },
+    ],
+    modifiers: [          // 条件（複数選択）。rate は小計に対する割合、add は固定加算
+      { id: "vacant",  label: "空室（家具なし）", rate: -0.10 },
+      { id: "weekend", label: "土日祝の作業",      rate: +0.10 },
+      { id: "parking", label: "駐車場なし",        add: 2000 },
+    ],
+    areas: [              // エリア（単一選択）
+      { id: "city",   label: "市内",   add: 0 },
+      { id: "near",   label: "近隣市", add: 3000 },
+      { id: "far",    label: "遠方",   add: 6000 },
+    ],
+  };
+
+  // ============================================================
+  // 以下は汎用ロジック（通常は触らなくて構いません）
+  // ============================================================
+  (function () {
+    "use strict";
+
+    const $ = (sel) => document.querySelector(sel);
+    const yen = (n) => n.toLocaleString("ja-JP");
+    const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>';
+
+    // 状態
+    const state = {
+      layout: CONFIG.layouts[0].id,
+      items: {},        // { id: qty }
+      mods: new Set(),
+      area: CONFIG.areas[0].id,
+    };
+
+    // ---------- 金額ラベル ----------
+    function modifierAmountLabel(m) {
+      if (typeof m.rate === "number") {
+        const pct = Math.round(Math.abs(m.rate) * 100);
+        return (m.rate < 0 ? "−" : "+") + pct + "%";
+      }
+      if (typeof m.add === "number") return "+¥" + yen(m.add);
+      return "";
+    }
+
+    // ---------- フォーム生成 ----------
+    function choiceHTML({ type, name, id, label, amount, qtyMax, unit }) {
+      const qty = qtyMax
+        ? `<span class="qty"><select data-qty-for="${id}" aria-label="${label}の数量">` +
+          Array.from({ length: qtyMax }, (_, i) => `<option value="${i + 1}">${i + 1}${unit || ""}</option>`).join("") +
+          `</select></span>`
+        : "";
+      return `
+        <label class="choice ${type === "checkbox" ? "is-check" : ""}">
+          <input type="${type}" name="${name}" value="${id}">
+          <span class="mark">${CHECK_SVG}</span>
+          <span class="txt"><span class="name">${label}</span><span class="amt">${amount}</span></span>
+          ${qty}
+        </label>`;
+    }
+
+    function render() {
+      $("#layouts").innerHTML = CONFIG.layouts.map((l) =>
+        choiceHTML({ type: "radio", name: "layout", id: l.id, label: l.label, amount: "¥" + yen(l.price) })
+      ).join("");
+      $("#items").innerHTML = CONFIG.items.map((it) =>
+        choiceHTML({
+          type: "checkbox", name: "item", id: it.id, label: it.label,
+          amount: "¥" + yen(it.price) + (it.unit ? " / " + it.unit : ""),
+          qtyMax: it.maxQty, unit: it.unit,
+        })
+      ).join("");
+      $("#modifiers").innerHTML = CONFIG.modifiers.map((m) =>
+        choiceHTML({ type: "checkbox", name: "mod", id: m.id, label: m.label, amount: modifierAmountLabel(m) })
+      ).join("");
+      $("#areas").innerHTML = CONFIG.areas.map((a) =>
+        choiceHTML({ type: "radio", name: "area", id: a.id, label: a.label, amount: a.add ? "+¥" + yen(a.add) : "加算なし" })
+      ).join("");
+      document.querySelectorAll("[data-business-name]").forEach((el) => { el.textContent = CONFIG.businessName; });
+    }
+
+    // ---------- 状態 ⇄ フォーム ----------
+    function readForm() {
+      const form = $("#form");
+      state.layout = form.querySelector('input[name="layout"]:checked')?.value || CONFIG.layouts[0].id;
+      state.area = form.querySelector('input[name="area"]:checked')?.value || CONFIG.areas[0].id;
+      state.items = {};
+      form.querySelectorAll('input[name="item"]:checked').forEach((cb) => {
+        const sel = form.querySelector(`select[data-qty-for="${cb.value}"]`);
+        state.items[cb.value] = sel ? Number(sel.value) : 1;
+      });
+      state.mods = new Set([...form.querySelectorAll('input[name="mod"]:checked')].map((cb) => cb.value));
+    }
+
+    function writeForm() {
+      const form = $("#form");
+      form.querySelectorAll('input[name="layout"]').forEach((r) => { r.checked = r.value === state.layout; });
+      form.querySelectorAll('input[name="area"]').forEach((r) => { r.checked = r.value === state.area; });
+      form.querySelectorAll('input[name="item"]').forEach((cb) => {
+        const qty = state.items[cb.value];
+        cb.checked = !!qty;
+        const sel = form.querySelector(`select[data-qty-for="${cb.value}"]`);
+        if (sel && qty) sel.value = String(Math.min(qty, sel.options.length));
+      });
+      form.querySelectorAll('input[name="mod"]').forEach((cb) => { cb.checked = state.mods.has(cb.value); });
+    }
+
+    // ---------- 計算 ----------
+    function calc() {
+      const layout = CONFIG.layouts.find((l) => l.id === state.layout) || CONFIG.layouts[0];
+      const area = CONFIG.areas.find((a) => a.id === state.area) || CONFIG.areas[0];
+      const lines = [];
+
+      // 1. 間取り基本料金
+      let rateBase = layout.price;
+      lines.push({ name: "間取り：" + layout.label, amount: layout.price });
+
+      // 2. 作業箇所 × 数量
+      for (const it of CONFIG.items) {
+        const qty = state.items[it.id];
+        if (!qty) continue;
+        const amount = it.price * qty;
+        rateBase += amount;
+        lines.push({ name: it.label + (it.unit ? " " + qty + it.unit : ""), amount });
+      }
+
+      // 3. 割合条件（間取り + 作業箇所 の合計に対してのみ）
+      let subtotal = rateBase;
+      for (const m of CONFIG.modifiers) {
+        if (!state.mods.has(m.id) || typeof m.rate !== "number") continue;
+        const amount = Math.round(rateBase * m.rate);
+        subtotal += amount;
+        lines.push({ name: m.label + "（" + modifierAmountLabel(m) + "）", amount });
+      }
+
+      // 4. 固定加算
+      for (const m of CONFIG.modifiers) {
+        if (!state.mods.has(m.id) || typeof m.add !== "number") continue;
+        subtotal += m.add;
+        lines.push({ name: m.label, amount: m.add });
+      }
+
+      // 5. エリア加算
+      if (area.add) {
+        subtotal += area.add;
+        lines.push({ name: "エリア：" + area.label, amount: area.add });
+      }
+
+      // 6. 消費税（1 円未満切り捨て）
+      const tax = Math.floor(subtotal * CONFIG.taxRate);
+      const total = subtotal + tax;
+      return { layout, area, lines, subtotal, tax, total };
+    }
+
+    // ---------- 表示 ----------
+    function renderResult(r) {
+      $("#total").textContent = yen(r.total);
+      $("#sticky-total").textContent = yen(r.total);
+      $("#subtotal").textContent = yen(r.subtotal);
+      $("#tax").textContent = yen(r.tax);
+      $("#lines").innerHTML = r.lines.map((l) =>
+        `<li class="${l.amount < 0 ? "minus" : ""}"><span class="n">${l.name}</span><span class="v">${l.amount < 0 ? "−" : ""}¥${yen(Math.abs(l.amount))}</span></li>`
+      ).join("");
+    }
+
+    // ---------- URL クエリ ----------
+    function stateToQuery() {
+      const p = new URLSearchParams();
+      p.set("layout", state.layout);
+      const items = Object.entries(state.items).map(([id, q]) => (q > 1 ? `${id}:${q}` : id));
+      if (items.length) p.set("items", items.join(","));
+      if (state.mods.size) p.set("mods", [...state.mods].join(","));
+      p.set("area", state.area);
+      return "?" + p.toString().replace(/%2C/g, ",").replace(/%3A/g, ":");
+    }
+
+    function queryToState() {
+      const p = new URLSearchParams(location.search);
+      const layout = p.get("layout");
+      if (layout && CONFIG.layouts.some((l) => l.id === layout)) state.layout = layout;
+      const area = p.get("area");
+      if (area && CONFIG.areas.some((a) => a.id === area)) state.area = area;
+      state.items = {};
+      (p.get("items") || "").split(",").filter(Boolean).forEach((tok) => {
+        const [id, q] = tok.split(":");
+        const it = CONFIG.items.find((x) => x.id === id);
+        if (!it) return;
+        let qty = Math.max(1, parseInt(q || "1", 10) || 1);
+        if (it.maxQty) qty = Math.min(qty, it.maxQty); else qty = 1;
+        state.items[id] = qty;
+      });
+      state.mods = new Set((p.get("mods") || "").split(",").filter((id) => CONFIG.modifiers.some((m) => m.id === id)));
+    }
+
+    function syncUrl() {
+      const url = location.pathname + stateToQuery() + location.hash;
+      history.replaceState(null, "", url);
+    }
+
+    // ---------- 問い合わせ文 ----------
+    function buildInquiry(r) {
+      const items = CONFIG.items
+        .filter((it) => state.items[it.id])
+        .map((it) => it.label + (it.unit ? " " + state.items[it.id] + it.unit : ""));
+      const mods = CONFIG.modifiers.filter((m) => state.mods.has(m.id)).map((m) => m.label);
+      return [
+        "【見積シミュレーターからの問い合わせ】",
+        "間取り：" + r.layout.label,
+        "作業箇所：" + (items.length ? items.join("、") : "なし"),
+        "条件：" + (mods.length ? mods.join("、") : "なし"),
+        "エリア：" + r.area.label,
+        "概算：税込 " + yen(r.total) + "円",
+        "---",
+        "希望日時：",
+        "お名前：",
+        "ご連絡先：",
+        "",
+      ].join("\n");
+    }
+
+    function updateMailLink(text) {
+      const subject = "【見積シミュレーター】お問い合わせ（" + CONFIG.businessName + "）";
+      $("#btn-mail").href = "mailto:" + CONFIG.contactEmail +
+        "?subject=" + encodeURIComponent(subject) +
+        "&body=" + encodeURIComponent(text);
+    }
+
+    async function copyText(text) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (_) { /* fall through */ }
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        return ok;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function flash(el, msg) {
+      el.textContent = msg;
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.textContent = ""; }, 2500);
+    }
+
+    // ---------- 再計算の入口 ----------
+    let lastResult = null;
+    function update() {
+      readForm();
+      lastResult = calc();
+      renderResult(lastResult);
+      syncUrl();
+      const inquiry = $("#inquiry");
+      if (!inquiry.hidden) {
+        const text = buildInquiry(lastResult);
+        $("#inquiry-text").value = text;
+        updateMailLink(text);
+      }
+    }
+
+    // ---------- 初期化 ----------
+    render();
+    queryToState();
+    writeForm();
+    update();
+
+    $("#form").addEventListener("change", update);
+
+    $("#btn-inquiry").addEventListener("click", () => {
+      const text = buildInquiry(lastResult);
+      const inquiry = $("#inquiry");
+      inquiry.hidden = false;
+      $("#inquiry-text").value = text;
+      updateMailLink(text);
+      $("#inquiry-text").focus();
+    });
+
+    $("#inquiry-text").addEventListener("input", (e) => updateMailLink(e.target.value));
+
+    $("#btn-copy").addEventListener("click", async () => {
+      const ok = await copyText($("#inquiry-text").value);
+      flash($("#copy-done"), ok ? "コピーしました" : "コピーできませんでした。手動で選択してコピーしてください。");
+    });
+
+    $("#btn-share").addEventListener("click", async () => {
+      const ok = await copyText(location.href);
+      const btn = $("#btn-share");
+      const orig = "この条件の URL をコピー";
+      btn.textContent = ok ? "URL をコピーしました" : "コピーできませんでした";
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    });
+  })();
+  </script>
+</body>
+</html>
