@@ -134,3 +134,10 @@ npm run shoot
 
 `og.html` の文言・金額を変えたら `npm run shoot` を実行し直してください。
 WSL / Linux で Chromium の起動に失敗する場合は `npx playwright install-deps chromium` を実行します。
+
+## 依頼を受けるときの流れ
+
+- 依頼者に `docs/hearing-template.md` を渡し、文字で記入してもらう
+- 記入内容と添付資料から `docs/hearing-to-config.md` に沿って `CONFIG` を作る
+- 「4-4 検算用の例」が一致することを確認してから試作 URL を送る
+- 修正は 2 回まで。合意内容からの変更は別見積
