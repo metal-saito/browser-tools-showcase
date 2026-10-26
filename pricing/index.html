@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ハチゴ工房の値付け計算機</title>
+<meta name="description" content="材料費・作業時間・売る場所を入れるだけで、利益と実質時給がひと目でわかるハンドメイド作家専用の値付け計算機。">
+<meta name="theme-color" content="#FBF7F2">
+<!-- 依頼者さま向けに納品するときは、次の行の先頭の「<!-- 」と末尾の「 -->」を外して検索に出ないようにします -->
+<!-- <meta name="robots" content="noindex"> -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="値付け計算機">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAE2UlEQVR42u3dvW0UQRyG8duRW0FCDiiAhNQVEFIDKQERAalrIKQCp04owAFCohgIwJIx9vnWt3v7//g9EXKAZmcev/vO3NiedkH4/v7i1w5pOb+8miKMYyIwKgk+kRiV5J5IjEpyT0RGJbEnIqOS2IPM2JKlnZmIjEppPciMSmk9yIxKUk9ERqUKMsiMSmk9yIxKUg8yo5LUw3ShEmPp7xBgy5QeZEYlqQeZUUnqsh36xeevVr/h/IzK6UzqmvOyz81RvWqQuuZ8PObo6LBopO4zL6PLRrC71BWf/yFXh0X13GUTusMxXTepqz/vfWdbfvTdReqOb6S2dzmqL3bXejWq1Y05C1l10bvNwV1329+2qyZ199Mc10cLSeC8/a/QLiHll6G7zLcOS+gCUkhmlaOMHGQuLPRSi5tFkm7Pe5DQ+nPORZbMD/dolSOhNGTWocvIQ2ZCl5GIzIQuIxOZmwl9igXfSqrKz0boZkktmQldRjIyE7qM1GQmdBmpyUzoMlKTmdBljtQcDRK6zDeVZCZ0GanJvBxnpsBrW0IDhJaI5pPQAKFBaIDQAKEBQtfckZtXQgOEBqEBQgOEBgjthMP8SmhIaIDQAKEBQgMVhHbCYZ4lNCQ0QGiA0AChgfxCO+Ew3xIaEhogtNef2kFooKHQ0tn8S2hIaIDQXndqB6EBQgO5hVY3rIeEhoQGCK1uqB2EBggNEBr98Le+7/Hxzav/vvbp+sb4JHS+jcdDsuz7eufxRd0YqhwHSrG11NHHR+hEMm8tTfTxERog9Lbpt1UKRh8foQFCA4QGoQFCp2bup2yn/lQu+vgIDRA6RgpulX7Rx0fohFJvLUv08RE6kdRRZIk+vgi4PppMDvImTeifH95ancBEXR+VAxIaIDRAaCC50F++/bAxTLQhvLteEQh5bPfPJP29sO64ansy/PDAWfbJJHpPcR9j+v7+4lf0Qc59rW0p+XNkyDTed69fEvpYHvsdEHMW45TSVB5X9H1N6o++H5r0ub+MZQ2hPl3fHCTPWjLPTd1KtS1FQu9L6agLfCqhT/lsGU6dWlxOemwR19z8PJXSa6di181y69t2cyrLklIvLZuTnoSV49DasYSQSwtyd0xr/t9rPm+WD7nCJfTeIzq/uy3EJvI+kY7ySlaOaK/g2+qx1onK1gkvoY/4js/6h4Si9txj60a0uxypOnR2qTOS7YLYMMmoNM/uQ6MUaYWW0ua3XEKT2ryqHFA5pIl0JrRFMI+EJrX5IzSpzZtNIWwKpY10JrRFMk+nJOXlpDm4yNTrG35YPDIT2iKaB0JbTM+vQ+vVRJbQFrnvW6llQldP6871apxfXk26peepwPnl1eTvFN6RIHNaO8n5A6GTi01kQs+SJKLcJN6zKbz9R/fNYfQNJImf7s8SOnhyk1jl2DQxj5GcvAtXDrUD2evGbucnVlAMQqOu0N0/NUTuuiGhUb9ySGlkTWcJjR6bQimNjOm8N6FJjWwyqxzoUTmkNDKm80EJTWpkkfngykFqZJBZh0avDi2lkSmdZyc0qRFZ5mdVDlIjqsy73b0L/nPxAwGIIvIim0JpjUgyHy00qRFJ5qMrhwqCKCIvltDSGpGcWU1AaY0twm/1RCU2TvkWP2lFIDeJ12azzktuEpcSmuAEXoPfqUhcWllWFJoAAAAASUVORK5CYII=">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAE2UlEQVR42u3dvW0UQRyG8duRW0FCDiiAhNQVEFIDKQERAalrIKQCp04owAFCohgIwJIx9vnWt3v7//g9EXKAZmcev/vO3NiedkH4/v7i1w5pOb+8miKMYyIwKgk+kRiV5J5IjEpyT0RGJbEnIqOS2IPM2JKlnZmIjEppPciMSmk9yIxKUk9ERqUKMsiMSmk9yIxKUg8yo5LUw3ShEmPp7xBgy5QeZEYlqQeZUUnqsh36xeevVr/h/IzK6UzqmvOyz81RvWqQuuZ8PObo6LBopO4zL6PLRrC71BWf/yFXh0X13GUTusMxXTepqz/vfWdbfvTdReqOb6S2dzmqL3bXejWq1Y05C1l10bvNwV1329+2qyZ199Mc10cLSeC8/a/QLiHll6G7zLcOS+gCUkhmlaOMHGQuLPRSi5tFkm7Pe5DQ+nPORZbMD/dolSOhNGTWocvIQ2ZCl5GIzIQuIxOZmwl9igXfSqrKz0boZkktmQldRjIyE7qM1GQmdBmpyUzoMlKTmdBljtQcDRK6zDeVZCZ0GanJvBxnpsBrW0IDhJaI5pPQAKFBaIDQAKEBQtfckZtXQgOEBqEBQgOEBgjthMP8SmhIaIDQAKEBQgMVhHbCYZ4lNCQ0QGiA0AChgfxCO+Ew3xIaEhogtNef2kFooKHQ0tn8S2hIaIDQXndqB6EBQgO5hVY3rIeEhoQGCK1uqB2EBggNEBr98Le+7/Hxzav/vvbp+sb4JHS+jcdDsuz7eufxRd0YqhwHSrG11NHHR+hEMm8tTfTxERog9Lbpt1UKRh8foQFCA4QGoQFCp2bup2yn/lQu+vgIDRA6RgpulX7Rx0fohFJvLUv08RE6kdRRZIk+vgi4PppMDvImTeifH95ancBEXR+VAxIaIDRAaCC50F++/bAxTLQhvLteEQh5bPfPJP29sO64ansy/PDAWfbJJHpPcR9j+v7+4lf0Qc59rW0p+XNkyDTed69fEvpYHvsdEHMW45TSVB5X9H1N6o++H5r0ub+MZQ2hPl3fHCTPWjLPTd1KtS1FQu9L6agLfCqhT/lsGU6dWlxOemwR19z8PJXSa6di181y69t2cyrLklIvLZuTnoSV49DasYSQSwtyd0xr/t9rPm+WD7nCJfTeIzq/uy3EJvI+kY7ySlaOaK/g2+qx1onK1gkvoY/4js/6h4Si9txj60a0uxypOnR2qTOS7YLYMMmoNM/uQ6MUaYWW0ua3XEKT2ryqHFA5pIl0JrRFMI+EJrX5IzSpzZtNIWwKpY10JrRFMk+nJOXlpDm4yNTrG35YPDIT2iKaB0JbTM+vQ+vVRJbQFrnvW6llQldP6871apxfXk26peepwPnl1eTvFN6RIHNaO8n5A6GTi01kQs+SJKLcJN6zKbz9R/fNYfQNJImf7s8SOnhyk1jl2DQxj5GcvAtXDrUD2evGbucnVlAMQqOu0N0/NUTuuiGhUb9ySGlkTWcJjR6bQimNjOm8N6FJjWwyqxzoUTmkNDKm80EJTWpkkfngykFqZJBZh0avDi2lkSmdZyc0qRFZ5mdVDlIjqsy73b0L/nPxAwGIIvIim0JpjUgyHy00qRFJ5qMrhwqCKCIvltDSGpGcWU1AaY0twm/1RCU2TvkWP2lFIDeJ12azzktuEpcSmuAEXoPfqUhcWllWFJoAAAAASUVORK5CYII=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<!--
+  ============================================================
+  ハンドメイド作家向け 値付け計算機（見本）
+  依頼者ごとに差し替えるのは、下の <script> 冒頭にある CONFIG だけです。
+    - shopName / toolName / credit … 画面上部と末尾の表示
+    - platforms … 売る場所と手数料（率・固定額・送料に手数料がかかるか）
+    - defaults  … 初期値（材料費・送料・時給・売値など）
+  手数料の初期値は 2026年10月26日時点の各社公開情報をもとにしています。
+  ============================================================
+-->
+<style>
+  :root {
+    --bg: #FBF7F2;
+    --card: #FFFFFF;
+    --ink: #2B2724;
+    --muted: #7B736C;
+    --line: #EDE4DA;
+    --accent: #D67048;
+    --accent-soft: #FBE9E0;
+    --good: #2E7D5B;
+    --good-soft: #E3F3EA;
+    --warn: #B8841D;
+    --warn-soft: #FBF0D6;
+    --bad: #C4493A;
+    --bad-soft: #FBE3DF;
+    --on-ink: #FFFFFF;        /* 濃い地（選択中チップ）の上の文字色 */
+    --outer: #F1E9E0;         /* PC表示のときの外側の地 */
+    --radius: 18px;
+    --shadow: 0 6px 20px rgba(80, 50, 30, 0.08);
+    color-scheme: light;
+  }
+  /* ダークモード（端末設定に追従。手元で切り替えた場合も同じ値） */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1E1A17; --card: #2A2521; --ink: #F3ECE4; --muted: #A89C91; --line: #3B342E;
+      --accent: #E2805A; --accent-soft: #4A2E22;
+      --good: #6FC79A; --good-soft: #1F3A2D; --warn: #E0B35A; --warn-soft: #3E321A; --bad: #EF7A6A; --bad-soft: #452420;
+      --on-ink: #1E1A17; --outer: #15110F; --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1E1A17; --card: #2A2521; --ink: #F3ECE4; --muted: #A89C91; --line: #3B342E;
+    --accent: #E2805A; --accent-soft: #4A2E22;
+    --good: #6FC79A; --good-soft: #1F3A2D; --warn: #E0B35A; --warn-soft: #3E321A; --bad: #EF7A6A; --bad-soft: #452420;
+    --on-ink: #1E1A17; --outer: #15110F; --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Zen Maru Gothic", -apple-system, BlinkMacSystemFont, "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* 画面上端のステータスバー帯（スマホアプリ表示のとき） */
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+  .app {
+    max-width: 430px;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0 calc(32px + env(safe-area-inset-bottom, 0px));
+  }
+  @media (min-width: 600px) {
+    body { background: var(--outer); }
+    .app { background: var(--bg); min-height: 100vh; box-shadow: 0 0 0 1px var(--line); }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- header ---------- */
+  header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 18px 0 10px;
+  }
+  header .logo {
+    width: 44px; height: 44px; border-radius: 12px; flex: none;
+    background: var(--accent); display: grid; place-items: center;
+    box-shadow: var(--shadow);
+  }
+  header .logo svg { width: 30px; height: 30px; }
+  header .names { flex: 1; min-width: 0; }
+  header .shop { font-size: 13px; color: var(--muted); letter-spacing: .02em; }
+  header .tool { font-size: 20px; font-weight: 700; line-height: 1.2; }
+  header .badge {
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    background: var(--accent-soft); border-radius: 999px; padding: 4px 10px; flex: none;
+  }
+
+  /* ---------- result (sticky) ---------- */
+  .result {
+    position: sticky; top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 5;
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 14px 16px 12px; margin-bottom: 14px;
+    border: 2px solid transparent;
+    transition: border-color .25s;
+  }
+  .result.good { border-color: var(--good); }
+  .result.warn { border-color: var(--warn); }
+  .result.bad  { border-color: var(--bad); }
+  .result .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+  .result .label { font-size: 12px; color: var(--muted); }
+  .result .profit { font-size: 40px; font-weight: 700; line-height: 1.05; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+  .result .profit small { font-size: 18px; font-weight: 700; margin-left: 2px; }
+  .result.good .profit { color: var(--good); }
+  .result.warn .profit { color: var(--warn); }
+  .result.bad  .profit { color: var(--bad); }
+  .result .margin {
+    font-size: 14px; font-weight: 700; padding: 6px 12px; border-radius: 999px; white-space: nowrap;
+  }
+  .result.good .margin { background: var(--good-soft); color: var(--good); }
+  .result.warn .margin { background: var(--warn-soft); color: var(--warn); }
+  .result.bad  .margin { background: var(--bad-soft); color: var(--bad); }
+  .result .msg { font-size: 13px; margin: 6px 0 10px; color: var(--muted); }
+  .result .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .result .stat { background: var(--bg); border-radius: 12px; padding: 8px 10px; }
+  .result .stat .k { font-size: 11px; color: var(--muted); }
+  .result .stat .v { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* ---------- cards ---------- */
+  .card {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 16px; margin-bottom: 14px;
+  }
+  .card h2 {
+    font-size: 15px; margin: 0 0 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .card h2 .step {
+    width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff;
+    font-size: 12px; display: grid; place-items: center; flex: none;
+  }
+  .hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+
+  /* chips */
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: none; border: 1.5px solid var(--line); background: var(--card); color: var(--ink);
+    border-radius: 999px; padding: 8px 14px; font-size: 14px; font-weight: 500; cursor: pointer;
+    font-family: inherit;
+  }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
+  .feenote { font-size: 12px; color: var(--muted); margin-top: 10px; display: flex; align-items: center; gap: 6px; }
+  .feenote b { color: var(--ink); }
+
+  /* segmented */
+  .seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg); border-radius: 12px; padding: 4px; margin-top: 12px; }
+  .seg button {
+    border: 0; background: transparent; border-radius: 9px; padding: 9px 6px; font-size: 13px; font-weight: 500;
+    color: var(--muted); cursor: pointer; font-family: inherit;
+  }
+  .seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,.08); font-weight: 700; }
+
+  /* price control */
+  .price-row { display: flex; align-items: center; gap: 8px; }
+  .price-input {
+    flex: 1; display: flex; align-items: center; gap: 4px;
+    border: 1.5px solid var(--line); border-radius: 14px; padding: 6px 12px; background: var(--bg);
+  }
+  .price-input .yen { color: var(--muted); font-weight: 700; }
+  .price-input input {
+    width: 100%; border: 0; background: transparent; font: inherit; font-size: 30px; font-weight: 700;
+    text-align: right; color: var(--ink); outline: none; font-variant-numeric: tabular-nums; min-width: 0;
+  }
+  .stepper { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+  .stepper button {
+    border: 1.5px solid var(--line); background: var(--card); border-radius: 12px; padding: 10px 0;
+    font-size: 14px; font-weight: 700; color: var(--ink); cursor: pointer; font-family: inherit;
+  }
+  .stepper button:active { background: var(--accent-soft); }
+  input[type="range"] { width: 100%; margin: 14px 0 0; accent-color: var(--accent); }
+
+  /* fields */
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { display: block; }
+  .field span.l { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .field .box {
+    display: flex; align-items: center; border: 1.5px solid var(--line); border-radius: 12px; padding: 6px 10px; background: var(--bg);
+  }
+  .field .box input {
+    width: 100%; border: 0; background: transparent; font: inherit; font-size: 18px; font-weight: 700;
+    text-align: right; color: var(--ink); outline: none; min-width: 0; font-variant-numeric: tabular-nums;
+  }
+  .field .box .u { color: var(--muted); font-size: 13px; margin-left: 4px; flex: none; }
+  .wage-line { grid-column: 1 / -1; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; background: var(--bg); border-radius: 12px; padding: 10px 12px; }
+  .wage-line b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  /* reverse */
+  .targets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .targets button {
+    border: 1.5px solid var(--line); background: var(--card); border-radius: 12px; padding: 9px 0;
+    font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; color: var(--ink);
+  }
+  .targets button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .reverse-box { background: var(--accent-soft); border-radius: 14px; padding: 14px; }
+  .reverse-box .big { font-size: 28px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .reverse-box .sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .reverse-box .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .reverse-box button {
+    border: 0; background: var(--accent); color: #fff; border-radius: 12px; padding: 10px 14px;
+    font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; flex: none;
+  }
+  .breakeven { font-size: 13px; color: var(--muted); margin-top: 12px; display: flex; justify-content: space-between; }
+  .breakeven b { color: var(--bad); font-variant-numeric: tabular-nums; }
+
+  /* breakdown bar */
+  .bar { display: flex; height: 22px; border-radius: 8px; overflow: hidden; background: var(--line); }
+  .bar div { height: 100%; transition: width .25s; }
+  .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; margin-top: 12px; font-size: 13px; }
+  .legend .i { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  .legend .i .n { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+  .legend .sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .legend .v { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .legend .i .n { white-space: nowrap; }
+  .c-material { background: #8C6A4F; }
+  .c-pack { background: #C9A27E; }
+  .c-ship { background: #6E8FB3; }
+  .c-labor { background: #E6A75A; }
+  .c-fee { background: #B9B0A8; }
+  .c-profit { background: var(--good); }
+  .c-loss { background: var(--bad); }
+
+  /* details */
+  details { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 14px; }
+  summary { padding: 14px 16px; font-size: 14px; font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "＋"; color: var(--muted); }
+  details[open] summary::after { content: "－"; }
+  .settings { padding: 0 16px 16px; }
+  .settings table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .settings th { text-align: left; font-weight: 500; color: var(--muted); padding: 6px 4px; border-bottom: 1px solid var(--line); }
+  .settings td { padding: 6px 4px; border-bottom: 1px solid var(--line); }
+  .settings td input[type="number"] { width: 64px; border: 1px solid var(--line); border-radius: 8px; padding: 5px 6px; font: inherit; font-size: 13px; text-align: right; background: var(--bg); }
+  .settings td input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+  .settings .src { font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
+  .settings .reset { margin-top: 10px; border: 1.5px solid var(--line); background: var(--card); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+
+  footer { text-align: center; font-size: 12px; color: var(--muted); padding: 10px 0 0; line-height: 1.7; }
+  footer .tip { display: inline-block; background: var(--card); border-radius: 999px; padding: 6px 14px; box-shadow: var(--shadow); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="#FBF7F2">
+        <path d="M22 34 L30 8 L48 28 Z"/><path d="M78 34 L70 8 L52 28 Z"/>
+        <circle cx="50" cy="56" r="34"/>
+        <circle cx="38" cy="52" r="4" fill="#7A3620"/><circle cx="62" cy="52" r="4" fill="#7A3620"/>
+        <path d="M46 64 L54 64 L50 70 Z" fill="#7A3620"/>
+        <path d="M14 60 L36 64 M14 70 L36 68 M86 60 L64 64 M86 70 L64 68" stroke="#7A3620" stroke-width="3" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="names">
+      <div class="shop" id="shopName">ハチゴ工房</div>
+      <div class="tool" id="toolName">値付け計算機</div>
+    </div>
+    <span class="badge">専用</span>
+  </header>
+
+  <!-- 結果（常に見える） -->
+  <section class="result" id="result" aria-live="polite">
+    <div class="top">
+      <div>
+        <div class="label">この売値での利益（1個あたり）</div>
+        <div class="profit"><span id="profit">0</span><small>円</small></div>
+      </div>
+      <div class="margin" id="marginChip">利益率 0%</div>
+    </div>
+    <div class="msg" id="msg">数字を入れると、ここに結果が出ます。</div>
+    <div class="stats">
+      <div class="stat"><div class="k">手取り</div><div class="v" id="net">0円</div></div>
+      <div class="stat"><div class="k">手数料</div><div class="v" id="fee">0円</div></div>
+      <div class="stat"><div class="k">実質時給</div><div class="v" id="hourly">0円</div></div>
+    </div>
+  </section>
+
+  <!-- STEP 1 売る場所 -->
+  <section class="card">
+    <h2><span class="step">1</span>どこで売りますか？</h2>
+    <div class="chips" id="platformChips" role="group" aria-label="売る場所"></div>
+    <div class="feenote" id="feeNote"></div>
+    <div class="seg" role="group" aria-label="送料の扱い">
+      <button type="button" id="shipSeparate" aria-pressed="true">送料は別にもらう</button>
+      <button type="button" id="shipIncluded" aria-pressed="false">送料込みの売値</button>
+    </div>
+  </section>
+
+  <!-- STEP 2 売値 -->
+  <section class="card">
+    <h2><span class="step">2</span>売値を動かしてみる</h2>
+    <div class="price-row">
+      <div class="price-input">
+        <span class="yen">¥</span>
+        <input type="number" id="price" inputmode="numeric" min="0" step="10" aria-label="売値">
+      </div>
+    </div>
+    <div class="stepper">
+      <button type="button" data-d="-500">−500</button>
+      <button type="button" data-d="-100">−100</button>
+      <button type="button" data-d="100">＋100</button>
+      <button type="button" data-d="500">＋500</button>
+    </div>
+    <input type="range" id="priceRange" min="0" max="10000" step="10" aria-label="売値スライダー">
+  </section>
+
+  <!-- STEP 3 かかるお金 -->
+  <section class="card">
+    <h2><span class="step">3</span>1個にかかるお金</h2>
+    <div class="fields">
+      <label class="field"><span class="l">材料費</span><span class="box"><input type="number" id="material" inputmode="numeric" min="0"><span class="u">円</span></span></label>
+      <label class="field"><span class="l">梱包・資材</span><span class="box"><input type="number" id="packaging" inputmode="numeric" min="0"><span class="u">円</span></span></label>
+      <label class="field"><span class="l">送料（実費）</span><span class="box"><input type="number" id="shipping" inputmode="numeric" min="0"><span class="u">円</span></span></label>
+      <label class="field"><span class="l">作業時間</span><span class="box"><input type="number" id="minutes" inputmode="numeric" min="0"><span class="u">分</span></span></label>
+      <label class="field"><span class="l">ほしい時給</span><span class="box"><input type="number" id="wage" inputmode="numeric" min="0" step="50"><span class="u">円</span></span></label>
+      <div class="wage-line"><span>工賃（作業時間 × 時給）</span><b id="labor">0円</b></div>
+    </div>
+    <p class="hint">時給は「これくらいはもらいたい」で大丈夫です。あとで実質時給と見比べられます。</p>
+  </section>
+
+  <!-- 逆算 -->
+  <section class="card">
+    <h2><span class="step">4</span>目標から逆算する</h2>
+    <div class="targets" id="targets" role="group" aria-label="目標の利益率"></div>
+    <div class="reverse-box">
+      <div class="row">
+        <div>
+          <div class="sub">利益率 <span id="targetLabel">30</span>% にするなら</div>
+          <div class="big"><span id="reversePrice">0</span>円</div>
+        </div>
+        <button type="button" id="applyReverse">この売値にする</button>
+      </div>
+    </div>
+    <div class="breakeven"><span>赤字になるライン（利益0円）</span><b><span id="breakeven">0</span>円</b></div>
+  </section>
+
+  <!-- 内訳 -->
+  <section class="card">
+    <h2><span class="step">5</span>売値の内訳</h2>
+    <div class="bar" id="bar" aria-hidden="true"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <details>
+    <summary>詳細設定（手数料の数字を変える）</summary>
+    <div class="settings">
+      <table id="feeTable">
+        <thead><tr><th>売る場所</th><th>手数料%</th><th>固定(円)</th><th>送料にも</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <button type="button" class="reset" id="resetFees">手数料を初期値に戻す</button>
+      <div class="src" id="src"></div>
+    </div>
+  </details>
+
+  <footer>
+    <div class="tip">📱 ホーム画面に追加すると、アプリのように使えます</div><br>
+    <span id="credit"></span>
+  </footer>
+</div>
+
+<script>
+/* =========================================================
+   CONFIG：依頼者ごとに差し替える部分
+   ========================================================= */
+const CONFIG = {
+  shopName: "ハチゴ工房",
+  toolName: "値付け計算機",
+  credit: "このツールは ハチゴ工房 さま専用に作成しました",
+  feeUpdated: "2026年10月26日",
+  targetChoices: [20, 30, 40, 50],
+  defaultTarget: 30,
+  platforms: [
+    { id: "minne",   name: "minne",        rate: 10.56, fixed: 0,  feeOnShipping: true,  round: "ceil",  note: "10.56%（税込）・送料にも手数料がかかります" },
+    { id: "creema",  name: "Creema",       rate: 11,    fixed: 0,  feeOnShipping: false, round: "round", note: "11%（税込）・送料には手数料がかかりません" },
+    { id: "mercari", name: "メルカリ",      rate: 10,    fixed: 0,  feeOnShipping: true,  round: "round", note: "10%・送料込みの売値にするのが基本です" },
+    { id: "base",    name: "BASE",         rate: 6.6,   fixed: 40, feeOnShipping: true,  round: "round", note: "決済3.6%＋40円とサービス利用料3%（スタンダードプラン）" },
+    { id: "stores",  name: "STORES",       rate: 5.5,   fixed: 0,  feeOnShipping: true,  round: "round", note: "5.5%〜（フリープラン・決済方法で変わります）" },
+    { id: "direct",  name: "対面・イベント", rate: 0,     fixed: 0,  feeOnShipping: false, round: "round", note: "手数料なし（出店料は別途）" }
+  ],
+  defaults: {
+    platform: "minne",
+    shippingMode: "separate",   // "separate"＝送料は別にもらう / "included"＝送料込み
+    price: 2500,
+    material: 350,
+    packaging: 80,
+    shipping: 185,
+    minutes: 60,
+    wage: 1000
+  }
+};
+/* ========================================================= */
+
+const $ = (id) => document.getElementById(id);
+const yen = (n) => Math.round(n).toLocaleString("ja-JP");
+const clampNum = (v) => { const n = Number(v); return Number.isFinite(n) && n > 0 ? n : 0; };
+
+const STORAGE_KEY = "nezuke-" + CONFIG.shopName;
+let state = loadState();
+
+function loadState() {
+  const base = {
+    ...CONFIG.defaults,
+    target: CONFIG.defaultTarget,
+    fees: Object.fromEntries(CONFIG.platforms.map(p => [p.id, { rate: p.rate, fixed: p.fixed, feeOnShipping: p.feeOnShipping }]))
+  };
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if (saved && typeof saved === "object") {
+      return { ...base, ...saved, fees: { ...base.fees, ...(saved.fees || {}) } };
+    }
+  } catch (e) { /* 保存が使えない環境でもそのまま動く */ }
+  return base;
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+}
+
+function platform() { return CONFIG.platforms.find(p => p.id === state.platform) || CONFIG.platforms[0]; }
+
+function feeFor(price, extraShip) {
+  const p = platform(); const f = state.fees[p.id];
+  const base = price + (f.feeOnShipping ? extraShip : 0);
+  const raw = base * (f.rate / 100) + (base > 0 ? f.fixed : 0);
+  return p.round === "ceil" ? Math.ceil(raw) : Math.round(raw);
+}
+
+function calc() {
+  const price = clampNum(state.price);
+  const material = clampNum(state.material), packaging = clampNum(state.packaging), shipping = clampNum(state.shipping);
+  const minutes = clampNum(state.minutes), wage = clampNum(state.wage);
+  const labor = Math.round(minutes / 60 * wage);
+  const separate = state.shippingMode === "separate";
+  const extraShip = separate ? shipping : 0;     // 購入者から別にもらう送料
+  const fee = feeFor(price, extraShip);
+  const received = price + extraShip - fee;      // 実際に入ってくるお金
+  const cost = material + packaging + shipping + labor;
+  const profit = received - cost;
+  const margin = price > 0 ? profit / price * 100 : 0;
+  const hours = minutes / 60;
+  const hourly = hours > 0 ? (profit + labor) / hours : 0; // 工賃＋利益を時間で割った「実質時給」
+  return { price, material, packaging, shipping, minutes, wage, labor, fee, received, cost, profit, margin, hourly, separate };
+}
+
+// 目標利益率 t（売値に対する%）になる売値を逆算
+function reversePrice(targetPct) {
+  const p = platform(); const f = state.fees[p.id];
+  const r = f.rate / 100, t = targetPct / 100;
+  const material = clampNum(state.material), packaging = clampNum(state.packaging), shipping = clampNum(state.shipping);
+  const labor = Math.round(clampNum(state.minutes) / 60 * clampNum(state.wage));
+  const separate = state.shippingMode === "separate";
+  const shipCostInPrice = separate ? 0 : shipping;            // 込みなら売値から送料を払う
+  const feeOnExtra = (separate && f.feeOnShipping) ? r * shipping : 0; // 別送料にかかる手数料
+  const denom = 1 - r - t;
+  if (denom <= 0) return null;
+  const need = material + packaging + labor + shipCostInPrice + feeOnExtra + f.fixed;
+  const raw = need / denom;
+  return Math.ceil(raw / 10) * 10; // 10円単位に切り上げ
+}
+
+function render() {
+  const c = calc();
+  // 結果
+  const box = $("result");
+  box.classList.remove("good", "warn", "bad");
+  let cls, msg;
+  if (c.price <= 0) { cls = ""; msg = "売値を入れると結果が出ます。"; }
+  else if (c.profit < 0) { cls = "bad"; msg = `赤字です。あと ${yen(-c.profit)}円 足りません。`; }
+  else if (c.margin >= state.target) { cls = "good"; msg = `目標の ${state.target}% を超えています。この売値で大丈夫そうです。`; }
+  else if (c.profit === 0) { cls = "warn"; msg = "ちょうど赤字ライン。利益は残りません。"; }
+  else { cls = "warn"; msg = `黒字ですが、目標の ${state.target}% にはまだ届いていません。`; }
+  if (cls) box.classList.add(cls);
+  $("profit").textContent = (c.profit < 0 ? "−" : "") + yen(Math.abs(c.profit));
+  $("marginChip").textContent = c.profit < 0 ? "赤字" : `利益率 ${c.price > 0 ? Math.round(c.margin) : 0}%`;
+  $("msg").textContent = msg;
+  $("net").textContent = yen(c.received) + "円";
+  $("fee").textContent = yen(c.fee) + "円";
+  $("hourly").textContent = c.minutes > 0 ? ((c.hourly < 0 ? "−" : "") + yen(Math.abs(c.hourly)) + "円") : "—";
+  $("labor").textContent = yen(c.labor) + "円";
+
+  // 手数料メモ
+  const p = platform(); const f = state.fees[p.id];
+  const custom = (f.rate !== p.rate || f.fixed !== p.fixed || f.feeOnShipping !== p.feeOnShipping);
+  $("feeNote").innerHTML = `<b>${p.name}</b>：${custom ? `${f.rate}%${f.fixed ? "＋" + f.fixed + "円" : ""}（詳細設定で変更済み）` : p.note}`;
+
+  // 逆算
+  $("targetLabel").textContent = state.target;
+  const rp = reversePrice(state.target);
+  $("reversePrice").textContent = rp === null ? "—" : yen(rp);
+  const be = reversePrice(0);
+  $("breakeven").textContent = be === null ? "—" : yen(be);
+
+  // 内訳バー
+  const bar = $("bar"); const legend = $("legend");
+  bar.innerHTML = ""; legend.innerHTML = "";
+  // 売値 ＝ 材料費 ＋ 梱包 ＋（送料込みなら送料）＋ 工賃 ＋ 手数料 ＋ 利益
+  const parts = [
+    { k: "材料費", v: c.material, cls: "c-material" },
+    { k: "梱包・資材", v: c.packaging, cls: "c-pack" },
+    ...(c.separate ? [] : [{ k: "送料（自分負担）", v: c.shipping, cls: "c-ship" }]),
+    { k: "工賃", v: c.labor, cls: "c-labor" },
+    { k: "手数料", v: c.fee, cls: "c-fee" },
+    { k: c.profit >= 0 ? "利益" : "赤字", v: Math.abs(c.profit), cls: c.profit >= 0 ? "c-profit" : "c-loss" }
+  ];
+  const total = parts.reduce((s, x) => s + x.v, 0) || 1;
+  for (const x of parts) {
+    if (x.v > 0) { const d = document.createElement("div"); d.className = x.cls; d.style.width = (x.v / total * 100) + "%"; d.title = x.k; bar.appendChild(d); }
+    const li = document.createElement("div"); li.className = "i";
+    li.innerHTML = `<span class="n"><span class="sw ${x.cls}"></span>${x.k}</span><span class="v">${yen(x.v)}円</span>`;
+    legend.appendChild(li);
+  }
+  saveState();
+}
+
+/* ---------- UI 組み立て ---------- */
+function build() {
+  $("shopName").textContent = CONFIG.shopName;
+  $("toolName").textContent = CONFIG.toolName;
+  $("credit").textContent = CONFIG.credit;
+  document.title = `${CONFIG.shopName}の${CONFIG.toolName}`;
+
+  // 売る場所
+  const chips = $("platformChips");
+  for (const p of CONFIG.platforms) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = p.name;
+    b.setAttribute("aria-pressed", String(p.id === state.platform));
+    b.addEventListener("click", () => { state.platform = p.id; syncChips(); render(); });
+    chips.appendChild(b);
+  }
+  // 送料モード
+  $("shipSeparate").addEventListener("click", () => { state.shippingMode = "separate"; syncSeg(); render(); });
+  $("shipIncluded").addEventListener("click", () => { state.shippingMode = "included"; syncSeg(); render(); });
+  // 売値
+  $("price").value = state.price; $("priceRange").value = state.price;
+  $("price").addEventListener("input", (e) => { state.price = clampNum(e.target.value); $("priceRange").value = Math.min(10000, state.price); render(); });
+  $("priceRange").addEventListener("input", (e) => { state.price = clampNum(e.target.value); $("price").value = state.price; render(); });
+  document.querySelectorAll(".stepper button").forEach(b => b.addEventListener("click", () => {
+    state.price = Math.max(0, clampNum(state.price) + Number(b.dataset.d));
+    $("price").value = state.price; $("priceRange").value = Math.min(10000, state.price); render();
+  }));
+  // かかるお金
+  for (const id of ["material", "packaging", "shipping", "minutes", "wage"]) {
+    $(id).value = state[id];
+    $(id).addEventListener("input", (e) => { state[id] = clampNum(e.target.value); render(); });
+  }
+  // 目標
+  const t = $("targets");
+  for (const v of CONFIG.targetChoices) {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = v + "%";
+    b.setAttribute("aria-pressed", String(v === state.target));
+    b.addEventListener("click", () => { state.target = v; t.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(Number(x.textContent) === v))); render(); });
+    t.appendChild(b);
+  }
+  $("applyReverse").addEventListener("click", () => {
+    const rp = reversePrice(state.target); if (rp === null) return;
+    state.price = rp; $("price").value = rp; $("priceRange").value = Math.min(10000, rp); render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  // 詳細設定
+  buildFeeTable();
+  $("resetFees").addEventListener("click", () => {
+    state.fees = Object.fromEntries(CONFIG.platforms.map(p => [p.id, { rate: p.rate, fixed: p.fixed, feeOnShipping: p.feeOnShipping }]));
+    buildFeeTable(); render();
+  });
+  $("src").innerHTML = `手数料の初期値は ${CONFIG.feeUpdated} 時点の各社公開情報をもとにしています。各社の改定やプラン・決済方法で変わるため、ご自身の条件に合わせてここで直せます。<br>※ 振込手数料（minne 220円／回 など）は1個あたりの計算に含めていません。`;
+
+  syncChips(); syncSeg(); render();
+
+  // ホーム画面追加用のマニフェスト（対応ブラウザのみ。失敗しても動作に影響なし）
+  try {
+    const icon = document.querySelector('link[rel="apple-touch-icon"]').getAttribute("href");
+    const manifest = {
+      name: `${CONFIG.shopName}の${CONFIG.toolName}`, short_name: CONFIG.toolName,
+      display: "standalone", start_url: location.href, background_color: "#FBF7F2", theme_color: "#FBF7F2",
+      icons: [{ src: icon, sizes: "180x180", type: "image/png" }]
+    };
+    const link = document.createElement("link"); link.rel = "manifest";
+    link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" }));
+    document.head.appendChild(link);
+  } catch (e) { /* ignore */ }
+}
+function syncChips() {
+  $("platformChips").querySelectorAll(".chip").forEach((b, i) => b.setAttribute("aria-pressed", String(CONFIG.platforms[i].id === state.platform)));
+}
+function syncSeg() {
+  $("shipSeparate").setAttribute("aria-pressed", String(state.shippingMode === "separate"));
+  $("shipIncluded").setAttribute("aria-pressed", String(state.shippingMode === "included"));
+}
+function buildFeeTable() {
+  const tb = $("feeTable").querySelector("tbody"); tb.innerHTML = "";
+  for (const p of CONFIG.platforms) {
+    const f = state.fees[p.id];
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${p.name}</td>
+      <td><input type="number" step="0.01" min="0" value="${f.rate}" aria-label="${p.name}の手数料%"></td>
+      <td><input type="number" step="1" min="0" value="${f.fixed}" aria-label="${p.name}の固定手数料"></td>
+      <td><input type="checkbox" ${f.feeOnShipping ? "checked" : ""} aria-label="${p.name}は送料にも手数料がかかる"></td>`;
+    const [rate, fixed, chk] = tr.querySelectorAll("input");
+    rate.addEventListener("input", e => { f.rate = clampNum(e.target.value); render(); });
+    fixed.addEventListener("input", e => { f.fixed = clampNum(e.target.value); render(); });
+    chk.addEventListener("change", e => { f.feeOnShipping = e.target.checked; render(); });
+    tb.appendChild(tr);
+  }
+}
+build();
+</script>
+</body>
+</html>
